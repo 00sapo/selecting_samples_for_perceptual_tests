@@ -2,22 +2,16 @@ using ArgParse
 using Distances
 using Clustering
 using Statistics
+using Plots
+using NPZ
+include("contardo/PDispersion.jl")
 
 function args()
     s = ArgParseSettings()
     @add_arg_table! s begin
-        # "--in"
-        #     help = "an option with an argument"
-        # "--opt2", "-o"
-        #     help = "another option with an argument"
-        #     arg_type = Int
-        #     default = 0
-        # "--flag1"
-        #     help = "an option without argument, i.e. a flag"
-        #     action = :store_true
         "infile"
             help = "the input data"
-            required = true
+            required = false
     end
 
     parsed_args = parse_args(ARGS, s)
@@ -60,7 +54,8 @@ function p_dispersion(data, p::Integer)
         local chosen
         for point in this_idx
             other_centroid = mean([data[1:point-1, :]; data[point+1:end, :]], dims=1)
-            d = dist(other_centroid, data[point, :])
+            d = mean(abs.(other_centroid - data[point, :]'))
+            # d = dist(other_centroid, data[point, :]')
             if d > max_dist
                 max_dist = d
                 chosen = point
@@ -74,8 +69,21 @@ function p_dispersion(data, p::Integer)
     return choice, minimum(D[D .!= 0])
 end
 
-data = init(args())
-choice, d = p_dispersion(data, 5)
-println("minimum distance in the chosen points: $d")
-println("chosen points:")
+data = npzread("./samples_PCA_2.npy")
+choice, d = p_dispersion(data, 4)
+PDispersion.data.D = data'
+PDispersion.data.nnodes = size(data)[1]
+lb, ub, opt, _, _ = PDispersion.pdispersion_decremental_clustering(4)
+
+pgfplotsx()
+scatter(data[:, 1], data[:, 2], color="white")
+scatter!(data[choice, 1], data[choice, 2], color="red")
+scatter!(data[opt, 1], data[opt, 2], color="blue")
+savefig("plot.svg")
+gui()
+
+println("Found distance (ours, lb, ub): $d, $lb, $ub")
+println("\nFound points ours, contardo")
 println(choice)
+println(opt)
+println()
