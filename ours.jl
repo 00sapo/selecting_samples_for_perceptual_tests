@@ -69,17 +69,18 @@ function p_dispersion(data, p::Integer)
     return choice, minimum(D[D .!= 0])
 end
 
+P = 20
 data = npzread("./samples_PCA_2.npy")
-choice, d = p_dispersion(data, 4)
+choice, d = p_dispersion(data, P)
 PDispersion.data.D = data'
 PDispersion.data.nnodes = size(data)[1]
-lb, ub, opt, _, _ = PDispersion.pdispersion_decremental_clustering(4)
+lb, ub, opt, _, _ = PDispersion.pdispersion_decremental_clustering(P)
 
 pgfplotsx()
 scatter(data[:, 1], data[:, 2], color="white")
 scatter!(data[choice, 1], data[choice, 2], color="red")
 scatter!(data[opt, 1], data[opt, 2], color="blue")
-savefig("plot.svg")
+savefig("plot$P.svg")
 gui()
 
 println("Found distance (ours, lb, ub): $d, $lb, $ub")
