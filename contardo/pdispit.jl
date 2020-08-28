@@ -78,5 +78,5 @@ function pdispersion_decremental_clustering(p)
     solver_status.endStatus = solver_status.ok ? :optimal : :tilim
     solver_status.endGroupsNb = length(groups)
     println("upper bound of $ub")
-    lb, ub, sol, groups, avgSize
+    return lb, ub, sol, groups, avgSize
 end
