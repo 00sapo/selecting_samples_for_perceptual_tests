@@ -202,11 +202,12 @@ function plot(data, choices)
     # pgfplotsx()
     gr()
     choiceA, choiceB, choiceC, choiceD, opt = choices
-    scatter(data[:, 1], data[:, 2], color="white", label="data")
-    scatter!(data[choiceA, 1], data[choiceA, 2], color="red", label="choiceA")
-    scatter!(data[choiceB, 1], data[choiceB, 2], color="black", label="choiceB")
-    scatter!(data[choiceC, 1], data[choiceC, 2], color="green", label="choiceC")
-    scatter!(data[opt, 1], data[opt, 2], color="blue", label="contardo")
+    scatter(data[:, 1], data[:, 2], color="white", label="Data", markershape=:circle, legend=:topleft)
+    scatter!(data[choiceA, 1], data[choiceA, 2], color="red", label="Method A", markershape=:circle, markeralpha=1.0)
+    scatter!(data[choiceB, 1], data[choiceB, 2], color="orange", label="Method B", markershape=:xcross, markeralpha=1.0)
+    scatter!(data[choiceC, 1], data[choiceC, 2], color="green", label="Method C", markershape=:utriangle, markeralpha=1.0)
+    # scatter!(data[choiceD, 1], data[choiceD, 2], color="yellow", label="Method D", markershape=:xcross, markeralpha=1.0)
+    scatter!(data[opt, 1], data[opt, 2], color="blue", label="Contardo", marker=:cross, markeralpha=1.0)
 
 end
 
@@ -222,6 +223,7 @@ function main()
         if file[end-3:end] == ".npy"
             data = npzread(path)
         else
+            continue
             data = init(path)
         end
         tA = @elapsed choiceA = p_dispersion_centroid(data, p)
@@ -241,6 +243,7 @@ function main()
         @printf("%s\t| %2d | %.1e(%.1e)\t | %.1e(%.1e)\t | %.1e(%.1e)\t | %.1e(%.1e)\t | %.1e(%.1e)\t |\n", basename(file), p, dA, tA, dB, tB, dC, tC, dD, tD, d_cont, t_cont)
         if file[end-3:end] == ".npy"
             plot(data, (choiceA, choiceB, choiceC, choiceD, opt))
+            gui()
             savefig("plot$p.svg")
         end
     end
