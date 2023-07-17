@@ -5,7 +5,7 @@ In this repo you find useful code for selecting samples for designing listening 
 In 'contardo' there is a state-of-art method for solving the *p-dispersion* problem.
 
 In the root directory there is my code for a non mathematically-proven
-clustering approach to the same problem (much more efficient but much less
+clustering approach to the same problem (much more efficient and much more
 effective). Note that my approach seems to be better here, but I don't really
 understand why: it seems that the Contardo's code is not suitable for this case.
 
